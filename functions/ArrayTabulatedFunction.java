@@ -217,46 +217,6 @@ public class ArrayTabulatedFunction implements TabulatedFunction, Serializable {
         pointsCount++;
     }
 
-    // сериализация
-    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-        out.defaultWriteObject();
-        out.writeInt(pointsCount);
-        for (int i = 0; i < pointsCount; i++) {
-            out.writeDouble(points[i].getX());
-            out.writeDouble(points[i].getY());
-        }
-    }
-
-    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
-        in.defaultReadObject();
-        pointsCount = in.readInt();
-        points = new FunctionPoint[pointsCount + 10];
-        for (int i = 0; i < pointsCount; i++) {
-            double x = in.readDouble();
-            double y = in.readDouble();
-            points[i] = new FunctionPoint(x, y);
-        }
-    }
-
-    // для Externalizable
-    public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeInt(pointsCount);
-        for (int i = 0; i < pointsCount; i++) {
-            out.writeDouble(points[i].getX());
-            out.writeDouble(points[i].getY());
-        }
-    }
-
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        pointsCount = in.readInt();
-        points = new FunctionPoint[pointsCount + 10];
-        for (int i = 0; i < pointsCount; i++) {
-            double x = in.readDouble();
-            double y = in.readDouble();
-            points[i] = new FunctionPoint(x, y);
-        }
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

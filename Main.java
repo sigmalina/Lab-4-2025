@@ -178,7 +178,7 @@ public class Main {
 
         System.out.println("\nсравнение после externalizable:");
         compareFunctions(tabulated, deserializedExternalizable);
-        
+
 
     }
 
