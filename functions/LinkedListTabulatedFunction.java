@@ -27,7 +27,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction, Serializa
         if (leftX >= rightX) throw new IllegalArgumentException("Left border >= right border");
         if (pointsCount < 2) throw new IllegalArgumentException("Less than 2 points");
 
-        initHead();
+        initHead(); //
         double xStep = (rightX - leftX) / (pointsCount - 1);
         for (int i = 0; i < pointsCount; i++) {
             double x = leftX + i * xStep;
@@ -230,29 +230,6 @@ public class LinkedListTabulatedFunction implements TabulatedFunction, Serializa
 
         FunctionNode newNode = addNodeByIndex(insertIndex);
         newNode.point = new FunctionPoint(point);
-    }
-
-    // сериализация
-    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-        out.defaultWriteObject();
-        out.writeInt(pointsCount);
-        FunctionNode current = head.next;
-        while (current != head) {
-            out.writeDouble(current.point.getX());
-            out.writeDouble(current.point.getY());
-            current = current.next;
-        }
-    }
-
-    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
-        in.defaultReadObject();
-        int count = in.readInt();
-        initHead();
-        for (int i = 0; i < count; i++) {
-            double x = in.readDouble();
-            double y = in.readDouble();
-            addNodeToTail().point = new FunctionPoint(x, y);
-        }
     }
 
     @Override

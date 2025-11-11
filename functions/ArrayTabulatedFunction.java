@@ -2,12 +2,17 @@ package functions;
 
 import java.io.*;
 
-public class ArrayTabulatedFunction implements TabulatedFunction, Serializable {
+public class ArrayTabulatedFunction implements TabulatedFunction, Externalizable {
     private static final long serialVersionUID = 1L;
     private static final double EPSILON = 1e-10;
 
     private FunctionPoint[] points;
     private int pointsCount;
+
+    // Конструктор без параметров для Externalizable
+    public ArrayTabulatedFunction() {
+        // для Externalizable
+    }
 
     // конструктор равномерное распределение с у=0
     public ArrayTabulatedFunction(double leftX, double rightX, int pointsCount) {
@@ -47,7 +52,7 @@ public class ArrayTabulatedFunction implements TabulatedFunction, Serializable {
         }
     }
 
-    // конструктор  из массива точек
+    // конструктор из массива точек
     public ArrayTabulatedFunction(FunctionPoint[] points) {
         if (points.length < 2) {
             throw new IllegalArgumentException("Количество точек не может быть меньше двух");
@@ -62,7 +67,6 @@ public class ArrayTabulatedFunction implements TabulatedFunction, Serializable {
 
         this.pointsCount = points.length;
         this.points = new FunctionPoint[pointsCount + 10];
-
 
         for (int i = 0; i < pointsCount; i++) {
             this.points[i] = new FunctionPoint(points[i]);
@@ -215,6 +219,27 @@ public class ArrayTabulatedFunction implements TabulatedFunction, Serializable {
         System.arraycopy(points, insertIndex, points, insertIndex + 1, pointsCount - insertIndex);
         points[insertIndex] = new FunctionPoint(point);
         pointsCount++;
+    }
+
+    // Реализация Externalizable
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeInt(pointsCount);
+        for (int i = 0; i < pointsCount; i++) {
+            out.writeDouble(points[i].getX());
+            out.writeDouble(points[i].getY());
+        }
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        pointsCount = in.readInt();
+        points = new FunctionPoint[pointsCount + 10];
+        for (int i = 0; i < pointsCount; i++) {
+            double x = in.readDouble();
+            double y = in.readDouble();
+            points[i] = new FunctionPoint(x, y);
+        }
     }
 
     @Override
