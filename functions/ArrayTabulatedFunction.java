@@ -9,9 +9,10 @@ public class ArrayTabulatedFunction implements TabulatedFunction, Externalizable
     private FunctionPoint[] points;
     private int pointsCount;
 
-    // Конструктор без параметров для Externalizable
+    // конструктор без параметров для Externalizable
     public ArrayTabulatedFunction() {
-        // для Externalizable
+        this.pointsCount = 0;
+        this.points = new FunctionPoint[10];
     }
 
     // конструктор равномерное распределение с у=0
@@ -221,7 +222,7 @@ public class ArrayTabulatedFunction implements TabulatedFunction, Externalizable
         pointsCount++;
     }
 
-    // Реализация Externalizable
+    // реализация Externalizable
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeInt(pointsCount);

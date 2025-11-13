@@ -131,8 +131,6 @@ public class Main {
             System.out.printf("sin²(%.1f) + cos²(%.1f) = %.4f%n",
                     x, x, sumOfSquares.getFunctionValue(x));
         }
-
-
     }
 
     private static void testSerialization() throws IOException, ClassNotFoundException {
@@ -141,13 +139,8 @@ public class Main {
         // создание композиции log(exp(x)) = x
         Function composition = Functions.composition(new Log(Math.E), new Exp());
 
-        // явно создаём функции разных типов
-        ArrayTabulatedFunction arrayFunc = new ArrayTabulatedFunction(0, 10, 11);
-        for (int i = 0; i < arrayFunc.getPointsCount(); i++) {
-            double x = arrayFunc.getPointX(i);
-            arrayFunc.setPointY(i, composition.getFunctionValue(x));
-        }
 
+        TabulatedFunction arrayFunc = TabulatedFunctions.tabulate(composition, 0, 10, 11);
         LinkedListTabulatedFunction listFunc = new LinkedListTabulatedFunction(0, 10, 11);
         for (int i = 0; i < listFunc.getPointsCount(); i++) {
             double x = listFunc.getPointX(i);
@@ -162,35 +155,51 @@ public class Main {
 
         // ArrayTabulatedFunction - Externalizable
         System.out.println("\n--- ArrayTabulatedFunction (Externalizable) ---");
-        try (ObjectOutputStream oos = new ObjectOutputStream(
-                new FileOutputStream("array_externalizable.ser"))) {
-            arrayFunc.writeExternal(oos); // ЯВНЫЙ вызов Externalizable
+
+
+        if (arrayFunc instanceof ArrayTabulatedFunction) {
+            ArrayTabulatedFunction array = (ArrayTabulatedFunction) arrayFunc;
+
+            try (ObjectOutputStream oos = new ObjectOutputStream(
+                    new FileOutputStream("array_externalizable.ser"))) {
+                array.writeExternal(oos);
+            }
+
+            ArrayTabulatedFunction deserializedArray = new ArrayTabulatedFunction();
+            try (ObjectInputStream ois = new ObjectInputStream(
+                    new FileInputStream("array_externalizable.ser"))) {
+                deserializedArray.readExternal(ois);
+            }
+
+            System.out.println("сравнение Array после Externalizable:");
+            compareFunctions(array, deserializedArray);
+        } else {
+            System.out.println("ОШИБКА: arrayFunc не является ArrayTabulatedFunction");
         }
 
-        ArrayTabulatedFunction deserializedArray = new ArrayTabulatedFunction();
-        try (ObjectInputStream ois = new ObjectInputStream(
-                new FileInputStream("array_externalizable.ser"))) {
-            deserializedArray.readExternal(ois);
-        }
-
-        System.out.println("сравнение Array после Externalizable:");
-        compareFunctions(arrayFunc, deserializedArray);
-
-        //  LinkedListTabulatedFunction - Serializable
+        // LinkedListTabulatedFunction - Serializable
         System.out.println("\n--- LinkedListTabulatedFunction (Serializable) ---");
-        try (ObjectOutputStream oos = new ObjectOutputStream(
-                new FileOutputStream("list_serializable.ser"))) {
-            oos.writeObject(listFunc);
-        }
 
-        LinkedListTabulatedFunction deserializedList;
-        try (ObjectInputStream ois = new ObjectInputStream(
-                new FileInputStream("list_serializable.ser"))) {
-            deserializedList = (LinkedListTabulatedFunction) ois.readObject();
-        }
+        //
+        if (listFunc instanceof LinkedListTabulatedFunction) {
+            LinkedListTabulatedFunction list = (LinkedListTabulatedFunction) listFunc;
 
-        System.out.println("сравнение List после Serializable:");
-        compareFunctions(listFunc, deserializedList);
+            try (ObjectOutputStream oos = new ObjectOutputStream(
+                    new FileOutputStream("list_serializable.ser"))) {
+                oos.writeObject(list);
+            }
+
+            LinkedListTabulatedFunction deserializedList;
+            try (ObjectInputStream ois = new ObjectInputStream(
+                    new FileInputStream("list_serializable.ser"))) {
+                deserializedList = (LinkedListTabulatedFunction) ois.readObject();
+            }
+
+            System.out.println("сравнение List после Serializable:");
+            compareFunctions(list, deserializedList);
+        } else {
+            System.out.println("ОШИБКА: listFunc не является LinkedListTabulatedFunction");
+        }
 
     }
 

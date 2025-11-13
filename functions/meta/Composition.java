@@ -12,16 +12,18 @@ public class Composition implements Function {
 
     @Override
     public double getLeftDomainBorder() {
-        return f1.getLeftDomainBorder();
+        return f2.getLeftDomainBorder();  // f2 определяет границы входа
     }
 
     @Override
     public double getRightDomainBorder() {
-        return f1.getRightDomainBorder();
+        return f2.getRightDomainBorder();  // f2 определяет границы входа
     }
 
     @Override
     public double getFunctionValue(double x) {
-        return f2.getFunctionValue(f1.getFunctionValue(x));
+        // f1(f2(x)) - сначала f2, потом f1
+        double innerValue = f2.getFunctionValue(x);  // f2(x)
+        return f1.getFunctionValue(innerValue);      // f1(f2(x))
     }
 }
